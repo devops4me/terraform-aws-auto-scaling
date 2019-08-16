@@ -97,7 +97,7 @@ variable in_desired_instances {
 
 variable in_security_group_id {
     description = "The ID of the security group that constrains the traffic to and from the raised ec2 instances."
-    type        = list
+    type        = string
 }
 
 
