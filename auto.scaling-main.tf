@@ -9,26 +9,26 @@
  | -- be responsible for placing tags on the provisioned ec2 intances.
  | --
 */
-resource aws_autoscaling_group cluster {
+resource aws_autoscaling_group this {
 
-    name                 = "${ local.ecosystem_name }-asg-${ module.resource-tags.out_tag_timestamp }"
-    vpc_zone_identifier  = module.vpc-network.out_public_subnet_ids
-    launch_configuration = aws_launch_configuration.cluster.name
-    min_size             = 1
-    max_size             = 3
-    desired_capacity     = 1
+    name                 = "${ var.in_ecosystem_name }-asg-${ var.in_tag_timestamp }"
+    vpc_zone_identifier  = var.in_subnet_ids
+    launch_configuration = aws_launch_configuration.this.name
+    min_size             = var.in_minimum_instances
+    max_size             = var.in_maximum_instances
+    desired_capacity     = var.in_desired_instances
 
     tag {
 
         key                 = "Name"
-        value               = "${ local.ecosystem_name }-worker-${ module.resource-tags.out_tag_timestamp }"
+        value               = "${ var.in_ecosystem_name }-worker-${ var.in_tag_timestamp }"
         propagate_at_launch = true
     }
 
     tag {
 
         key                 = "Desc"
-        value               = "This auto scaled ec2 instance ( for ${ local.ecosystem_name } ) ${ module.resource-tags.out_tag_description }"
+        value               = "This auto scaled ec2 instance ( for ${ var.in_ecosystem_name } ) ${ var.in_tag_description }"
         propagate_at_launch = true
     }
 
@@ -56,16 +56,15 @@ resource aws_autoscaling_group cluster {
  | --   f) the user data scripts are run after the instance boots up
  | --
 */
-resource aws_launch_configuration cluster {
+resource aws_launch_configuration this {
 
-    name_prefix          = "${ local.ecosystem_name }-launch-config-${ module.resource-tags.out_tag_timestamp }"
-    image_id             = data.aws_ami.ecs-worker.id
-    instance_type        = "t2.xlarge"
-    iam_instance_profile = aws_iam_instance_profile.cluster-ec2-role.id
+    name_prefix          = "${ var.in_ecosystem_name }-launch-config-${ var.in_tag_timestamp }"
+    image_id             = var.in_ami_id
+    instance_type        = var.in_instance_type
+    iam_instance_profile = var.in_instance_profile_id
     key_name             = aws_key_pair.ssh.id
-
-    security_groups = [ module.security-group.out_security_group_id ]
-    user_data       = data.template_file.ecs_init.rendered
+    security_groups      = [ var.in_security_group_id ]
+    user_data            = var.in_user_data_script
 
     lifecycle {
         create_before_destroy = true
@@ -86,8 +85,8 @@ resource aws_launch_configuration cluster {
  | --
 */
 resource aws_key_pair ssh {
-    key_name = "key-4-${ local.ecosystem_name }-${ module.resource-tags.out_tag_timestamp }"
-    public_key = "${ var.in_ssh_public_key }"
+    key_name = "key-4-${ var.in_ecosystem_name }-${ var.in_tag_timestamp }"
+    public_key = var.in_ssh_public_key
 }
 
 
