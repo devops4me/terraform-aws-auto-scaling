@@ -74,7 +74,7 @@ variable in_minimum_instances {
 variable in_maximum_instances {
 
     description = "The maximum number of instance that this auto scaling group will raise to handle your workload."
-    type        = "number"
+    type        = number
     default     = 7
 }
 
@@ -86,7 +86,7 @@ variable in_maximum_instances {
 variable in_desired_instances {
 
     description = "The goldilocks instance count when your request levels are not to hot and not too cold."
-    type        = "number"
+    type        = number
     default     = 1
 }
 
@@ -97,7 +97,7 @@ variable in_desired_instances {
 
 variable in_security_group_id {
     description = "The ID of the security group that constrains the traffic to and from the raised ec2 instances."
-    type        = "list"
+    type        = list
 }
 
 
@@ -118,7 +118,7 @@ variable in_subnet_ids {
 variable in_mandatory_tags {
 
     description = "Optional tags unless your organization mandates that a set of given tags must be set."
-    type        = "map"
+    type        = map
     default     = { }
 }
 
@@ -130,6 +130,7 @@ variable in_mandatory_tags {
 variable in_ecosystem_name {
 
     description = "Creational stamp binding all infrastructure components created on behalf of this ecosystem instance."
+    type        = string
 }
 
 
