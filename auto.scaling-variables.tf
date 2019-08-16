@@ -62,7 +62,7 @@ variable in_user_data_script {
 variable in_minimum_instances {
 
     description = "The minimum number of instance to always have ready to handle requests defaulted at 1."
-    type        = "number"
+    type        = number
     default     = 1
 }
 
