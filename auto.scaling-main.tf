@@ -34,7 +34,7 @@ resource aws_autoscaling_group this {
 
     dynamic tag {
 
-        for_each = var.in_mandatory_tags
+        for_each = var.in_mandated_tags
         content {
             key   = tag.key
             value = tag.value
