@@ -1,5 +1,5 @@
 
-# Auto-scaling Group and Launch Configuration | Terraform Module
+# Auto-scaling Group and Launch Configuration
 
 This module creates an AWS auto-scaling group and launch configuration.
 
@@ -7,34 +7,39 @@ This module creates an AWS auto-scaling group and launch configuration.
 
     module vpc-network
     {
-        source  = "devops4me/vpc-network/aws"
-        version = "~> 1.0.3"
+        source  = "devops4me/auto-scaling/aws"
+        version = "~> 1.0.0"
 
-        in_vpc_cidr            = "10.245.0.0/16"
-        in_num_private_subnets = 6
-        in_num_public_subnets  = 3
+        in_ami_id         = "ami-12345678"
+        in_subnet_ids     = var.in_private_subnet_ids
+        in_ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2E...asdf/fghDF ec2 keypair"
+        in_instance_type  = "t2.medium"
+
+        in_instance_profile_id = module.ec2-role-profile.out_instance_profile_id
+        in_security_group_id   = module.security-group.out_security_group_id
+        in_user_data_script    = module.ecs-cluster.out_user_data_script
     }
 
-The most common use case is to specify the VPC Cidr, the number of public and private subnets.
+Create new ec2 instances of this type with this AMI ID. Ply them with this public SSH key. Use this instance profile to define the access each instance has to AWS resources. Use this security group to constrain traffic to the instances. Create each instance in one of this list of subnets in a round robin fashion. Run this user data script when the instance boots up.
 
 
 ---
 
 
-## [Run the Example](https://github.com/devops4me/terraform-aws-vpc-network/tree/master/example)
-
-You can run the example to see this module create a number of VPCs with varying attributes such as the number of private/public subnets.
-
 ## Module Inputs
 
-| Input Variable             | Type    | Description                                                   | Default        |
-|:-------------------------- |:-------:|:------------------------------------------------------------- |:--------------:|
-| **`in_vpc_cidr`**          | string  | The VPC's Cidr defining the range of available IP addresses   | 10.42.0.0/16   |
-| **`in_num_private_subnets`** | number | Number of private subnets to create across availability zones | 3              |
-| **`in_num_public_subnets`**  | number | Number of public subnets to create across availability zones. If one or more an internet gateway and route to the internet will be created regardless of the value of the in_create_gateway boolean variable. | 3 |
-| **`in_create_public_gateway`** | bool | if true create an internet gateway and routes so services can access the internet. | true |
-| **`in_create_private_gateway`** | bool | if true creates a NAT gateway and private routes for egress access from private subnets. | true |
-| **`in_subnets_max`** | number | 2 to the power of this is the [max number of carvable subnets](https://www.devopswiki.co.uk/vpc/network-cidr) So 2<sup>4</sup> = 16 subnets | 4 |
+| Input Variable               | Type    | Description                                                   |
+|:---------------------------- |:-------:|:------------------------------------------------------------- |
+| **`in_minimum_instances`**   | number  | The minimum number of instancees to maintain during cold periods. |
+| **`in_maximum_instances`**   | number  | The maximum number of instances no matter the heat applied. |
+| **`in_desired_instances`**   | number  | The desired number of instances to have up and running. |
+| **`in_ami_id`**              | string  | Create new ec2 instances with this AMI ID.       |
+| **`in_subnet_ids`**          | list    | Create each instance in one of this list of subnets in a round robin fashion. |
+| **`in_ssh_public_key`**      | string  | Ply each ec2 instance with this public SSH key.               |
+| **`in_instance_type`**       | string  | Create instances from this instance type class. |
+| **`in_instance_profile_id`** | string  | The ID of the profile that defines each the AWS resource access given to each ec2 instance. |
+| **`in_security_group_id`**   | string  | Use this security group to constrain the traffic to and from the ec2 instances. |
+| **`in_user_data_script`**    | string  | Run this user data script when the instance boots up. |
 
 
 ### Optional Resource Tag Inputs
@@ -53,62 +58,3 @@ Try **`echo $(date +%y%m%d%H%M%S)`** to check your timestamp and **`echo "was cr
 export TF_VAR_in_timestamp=$(date +%y%m%d%H%M%S)
 export TF_VAR_in_description="was created by $USER@$HOSTNAME on $(date)."
 ```
-
-
----
-
-
-## subnets into availability zones | round robin
-
-You can create **more or less subnets** than there are availability zones in the VPC's region. You can ask for **6 private subnets** in a **3 availability zone region**. The subnets are distributed into the availability zones like dealing a deck of cards.
-
-Every permutation of subnets and availability zones is catered for so you can demand
-
-- **less subnets** than availability zones (so some won't get any)
-- a subnet count that is an **exact multiple** of the zone count (equality reigns)
-- that **no subnets** (public and/or private) get created
-- nothing - and each availability zone will get one public and one private subnet
-
-
----
-
-
-## internet gateway and route
-
-This module **senses** whether you wish to **create an internet gateway** (in) and a route (out) to the internet.
-
-If **in_num_public_subnets is greater than zero** it automatically creates an internet gateway and a route along with the public subnets. This behaviour can be switched off by setting **in_ignore_public** to true.
-
-
----
-
-
-## output variables
-
-Here are the most popular **output variables** exported from this VPC and subnet creating module.
-
-| Exported | Type | Example | Comment |
-|:-------- |:---- |:------- |:------- |
-**`out_vpc_id`** | String | vpc-1234567890 | the **VPC id** of the just-created VPC
-**`out_rtb_id`** | String | "rtb-2468013579" | ID of the VPC's default route table
-**`out_subnet_ids`** | List of Strings | [ "subnet-545123498798345", "subnet-83507325124987" ] | list of **all private and public** subnet ids
-**`out_private_subnet_ids`** | List of Strings | [ "subnet-545123498798345", "subnet-83507325124987" ] | list of **private** subnet ids
-**`out_public_subnet_ids`** | List of Strings |  [ "subnet-945873408204034", "subnet-8940202943031" ] | list of **public** subnet ids
-
-
----
-
-
-## Resources Created
-
-This module houses your infrastructure within a secure VPC and it creates the networking resources for routing traffic to your services and conversely enabling your services to access the internet. This module creates
-
-- a VPC (virtual private cloud)
-- subnets within the VPC across one or more availability zones
-- an **internet gateway** unless **`in_num_public_subnets`** is zero
-- an **elastic IP address** unless **`in_num_public_subnets`** is zero
-- a **nat gateway** attached to public subnets for routing outgoing traffic
-- **route tables** along with the necessary public and private routes
-- **associations** that bind subnets to route tables
-
-The subnets are dished out across availability zones in a round robin fashion. You can request less, the same or more (private/public) subnets than there are availability zones.

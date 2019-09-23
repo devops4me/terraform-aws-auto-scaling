@@ -11,7 +11,7 @@
 */
 resource aws_autoscaling_group this {
 
-    name                 = "${ var.in_ecosystem_name }-asg-${ var.in_tag_timestamp }"
+    name                 = "${ var.in_ecosystem }-asg-${ var.in_timestamp }"
     vpc_zone_identifier  = var.in_subnet_ids
     launch_configuration = aws_launch_configuration.this.name
     min_size             = var.in_minimum_instances
@@ -21,14 +21,14 @@ resource aws_autoscaling_group this {
     tag {
 
         key                 = "Name"
-        value               = "${ var.in_ecosystem_name }-worker-${ var.in_tag_timestamp }"
+        value               = "${ var.in_ecosystem }-worker-${ var.in_timestamp }"
         propagate_at_launch = true
     }
 
     tag {
 
         key                 = "Desc"
-        value               = "This auto scaled ec2 instance ( for ${ var.in_ecosystem_name } ) ${ var.in_tag_description }"
+        value               = "This auto scaled ec2 instance ( for ${ var.in_ecosystem } ) ${ var.in_description }"
         propagate_at_launch = true
     }
 
@@ -58,7 +58,7 @@ resource aws_autoscaling_group this {
 */
 resource aws_launch_configuration this {
 
-    name_prefix          = "${ var.in_ecosystem_name }-launch-config-${ var.in_tag_timestamp }"
+    name_prefix          = "${ var.in_ecosystem }-launch-config-${ var.in_timestamp }"
     image_id             = var.in_ami_id
     instance_type        = var.in_instance_type
     iam_instance_profile = var.in_instance_profile_id
@@ -85,6 +85,6 @@ resource aws_launch_configuration this {
  | --
 */
 resource aws_key_pair ssh {
-    key_name = "key-4-${ var.in_ecosystem_name }-${ var.in_tag_timestamp }"
+    key_name = "key-4-${ var.in_ecosystem }-${ var.in_timestamp }"
     public_key = var.in_ssh_public_key
 }
