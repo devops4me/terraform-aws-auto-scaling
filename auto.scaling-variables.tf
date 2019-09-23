@@ -1,10 +1,6 @@
 
-################ ############################################### ########
-################ Module [[[auto-scaling]]] Input Variables List. ########
-################ ############################################### ########
-
 ### ###################### ###
-### [[variable]] in_ami_id ###
+### in_ami_id ###
 ### ###################### ###
 
 variable in_ami_id {
@@ -14,7 +10,7 @@ variable in_ami_id {
 
 
 ### ############################# ###
-### [[variable]] in_instance_type ###
+### in_instance_type ###
 ### ############################# ###
 
 variable in_instance_type {
@@ -25,7 +21,7 @@ variable in_instance_type {
 
 
 ### ################################### ###
-### [[variable]] in_instance_profile_id ###
+### in_instance_profile_id ###
 ### ################################### ###
 
 variable in_instance_profile_id {
@@ -35,7 +31,7 @@ variable in_instance_profile_id {
 
 
 ### ############################## ###
-### [[variable]] in_ssh_public_key ###
+### in_ssh_public_key ###
 ### ############################## ###
 
 variable in_ssh_public_key {
@@ -45,7 +41,7 @@ variable in_ssh_public_key {
 
 
 ### ################################ ###
-### [[variable]] in_user_data_script ###
+### in_user_data_script ###
 ### ################################ ###
 
 variable in_user_data_script {
@@ -56,7 +52,7 @@ variable in_user_data_script {
 
 
 ### ################################# ###
-### [[variable]] in_minimum_instances ###
+### in_minimum_instances ###
 ### ################################# ###
 
 variable in_minimum_instances {
@@ -68,7 +64,7 @@ variable in_minimum_instances {
 
 
 ### ################################# ###
-### [[variable]] in_maximum_instances ###
+### in_maximum_instances ###
 ### ################################# ###
 
 variable in_maximum_instances {
@@ -80,7 +76,7 @@ variable in_maximum_instances {
 
 
 ### ################################# ###
-### [[variable]] in_desired_instances ###
+### in_desired_instances ###
 ### ################################# ###
 
 variable in_desired_instances {
@@ -92,7 +88,7 @@ variable in_desired_instances {
 
 
 ### ################################# ###
-### [[variable]] in_security_group_id ###
+### in_security_group_id ###
 ### ################################# ###
 
 variable in_security_group_id {
@@ -101,7 +97,7 @@ variable in_security_group_id {
 
 
 ### ########################## ###
-### [[variable]] in_subnet_ids ###
+### in_subnet_ids ###
 ### ########################## ###
 
 variable in_subnet_ids {
@@ -111,7 +107,7 @@ variable in_subnet_ids {
 
 
 ### ############################## ###
-### [[variable]] in_mandated_tags ###
+### in_mandated_tags ###
 ### ############################## ###
 
 variable in_mandated_tags {
